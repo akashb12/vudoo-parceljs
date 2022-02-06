@@ -41,7 +41,24 @@ data.forEach(function (row, key) {
   // var newRow = document.createElement("tr");
   // tableBody.appendChild(newRow);
 
-  d.innerHTML += `<div class="video-container outer-max-width">
+  d.innerHTML += `
+  <div id="popup-${key}" class="popup">
+ <header>
+   <span>Share Modal</span>
+   <div id="close-${key}" class="close"><i class="bi bi-x-lg"></i></div>
+ </header>
+ <div class="content">
+   <p>Share this link via</p>
+   <ul class="icons">
+     <a href="#"><i class="bi bi-facebook"></i></a>
+     <a href="#"><i class="bi bi-twitter"></i></a>
+     <a href="#"><i class="bi bi-instagram"></i></a>
+     <a href="#"><i class="bi bi-whatsapp"></i></a>
+     <a href="#"><i class="bi bi-clipboard"></i></a>
+   </ul>
+   </div>
+</div>
+  <div class="video-container outer-max-width">
     <div class="video-cards" id="video-cards-${key}">
     <video
     id=video-${key}
@@ -63,7 +80,7 @@ data.forEach(function (row, key) {
   </div>
     <div class="video-footer">
     <div class="video-footer-div">
-    <i style="font-size:1.5rem;" class="video-icon bi bi-share-fill"></i>
+    <i style="font-size:1.5rem;" id="shareBtn-${key}" class="video-icon bi bi-share-fill"></i>
     <i style="font-size:1.5rem;" id=unMute-${key} class="video-icon bi bi-volume-mute-fill"></i>
     </div>
     <div>
@@ -75,12 +92,19 @@ data.forEach(function (row, key) {
 });
 var videoPlayers = Array.from(document.querySelectorAll(".video-player"));
 var videofooters = document.querySelectorAll(".video-footer-div");
-
-// for (i = 0; i < videoPlayers.length; i++) {
 videoPlayers.map((item, key) => {
   const soundControl = document.getElementById(`unMute-${key}`);
   const videoCards = document.getElementById(`video-cards-${key}`);
   const videoHeaders = document.getElementById(`video-header-${key}`);
+  const share = document.getElementById(`shareBtn-${key}`);
+  const popup = document.getElementById(`popup-${key}`);
+  const close = document.getElementById(`close-${key}`);
+  share.addEventListener("click", () => {
+    popup.classList.toggle("show");
+  });
+  close.addEventListener("click", () => {
+    share.click();
+  });
   soundControl.addEventListener("click", function () {
     if (item.muted) {
       item.muted = false;
@@ -135,4 +159,5 @@ videoPlayers.map((item, key) => {
     console.log((v.currentTime / v.duration) * 100);
   });
 });
+
 // }
