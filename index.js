@@ -48,13 +48,12 @@ data.forEach(function (row, key) {
    <div id="close-${key}" class="close"><i class="bi bi-x-lg"></i></div>
  </header>
  <div class="content">
-   <p>Share this link via</p>
    <ul class="icons">
-     <a href="#"><i class="bi bi-facebook"></i></a>
+     <a id="facebook-${key}" href="#"><i class="bi bi-facebook"></i></a>
      <a href="#"><i class="bi bi-twitter"></i></a>
      <a href="#"><i class="bi bi-instagram"></i></a>
-     <a href="#"><i class="bi bi-whatsapp"></i></a>
-     <a href="#"><i class="bi bi-clipboard"></i></a>
+     <a id="whatsapp-${key}" href="#"><i class="bi bi-whatsapp"></i></a>
+     <a id="clip-${key}" href="#"><i class="bi bi-clipboard"></i></a>
    </ul>
    </div>
 </div>
@@ -99,11 +98,51 @@ videoPlayers.map((item, key) => {
   const share = document.getElementById(`shareBtn-${key}`);
   const popup = document.getElementById(`popup-${key}`);
   const close = document.getElementById(`close-${key}`);
+  const facebookBtn = document.getElementById(`facebook-${key}`);
+  const whatsappBtn = document.getElementById(`whatsapp-${key}`);
+  const clipboardBtn = document.getElementById(`clip-${key}`);
   share.addEventListener("click", () => {
     popup.classList.toggle("show");
   });
   close.addEventListener("click", () => {
     share.click();
+  });
+  facebookBtn.addEventListener("click", () => {
+    facebookBtn.setAttribute(
+      "href",
+      `https://www.facebook.com/sharer.php?u=${item.src}`
+    );
+  });
+  whatsappBtn.addEventListener("click", () => {
+    whatsappBtn.setAttribute(
+      "href",
+      `https://wa.me/?text=${"Share This Video Link"} ${item.src}`
+    );
+  });
+  clipboardBtn.addEventListener("click", () => {
+    var dummy = document.createElement("input");
+
+    // Add it to the document
+    document.body.appendChild(dummy);
+
+    // Set its ID
+    dummy.setAttribute("id", "dummy_id");
+
+    // Output the array into it
+    document.getElementById("dummy_id").value = item.src;
+
+    // Select it
+    dummy.select();
+
+    // Copy its contents
+    document.execCommand("copy");
+
+    // Remove it as its not needed anymore
+    document.body.removeChild(dummy);
+    clipboardBtn.childNodes[0].setAttribute("class", `bi bi-check`);
+    setTimeout(() => {
+      clipboardBtn.childNodes[0].setAttribute("class", `bi bi-clipboard`);
+    }, 3000);
   });
   soundControl.addEventListener("click", function () {
     if (item.muted) {

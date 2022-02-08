@@ -20,7 +20,7 @@ html {
   /* height: 55vh; */
   width: 25%;
   margin: 10px;
-  max-width: 500px;
+  max-width: 550px;
   border-radius: 20px;
   background-color: white;
   /* overflow: scroll; */
@@ -50,6 +50,7 @@ html {
 .video-header > * {
   margin: 15px;
 }
+
 @media screen and (max-width: 600px) {
   .video-page {
     width: 100vw;
@@ -69,7 +70,7 @@ html {
 /* video */
 .video-player {
   width: 20vw;
-  height: 500px;
+  height: 550px;
   object-fit: fill;
   border-radius: 10px;
 }
@@ -78,7 +79,7 @@ html {
 }
 .video-cards {
   position: relative;
-  height: 500px;
+  height: 550px;
   /* margin: 10px; */
 }
 .video-title {
@@ -167,9 +168,15 @@ video {
 @media screen and (max-width: 600px) {
   .video-player {
     width: 70vw;
-    height: 500px;
+    height: 550px;
     object-fit: fill;
     border-radius: 10px;
+  }
+  .popup.show {
+    width: auto;
+  }
+  .icons a {
+    margin: 4px;
   }
 }
 
