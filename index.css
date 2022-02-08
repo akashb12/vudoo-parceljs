@@ -106,7 +106,7 @@ video {
   opacity: 1;
 }
 .video-ended {
-  display: flex;
+  display: none;
   justify-content: space-around;
   align-items: center;
   width: 100%;
@@ -179,13 +179,16 @@ video {
     margin: 4px;
   }
 }
+i {
+  cursor: pointer;
+}
 
 /* modal */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
 .view-modal,
 .popup {
-  position: absolute;
+  position: fixed;
   left: 50%;
 }
 button {

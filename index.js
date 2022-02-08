@@ -87,7 +87,10 @@ data.forEach(function (row, key) {
         <button class="video-footer-button">${row.cta}</button>
       </Link>
     </div>
-  </div>`;
+  </div>
+  <div id="video-ended-${key}" class="video-ended">
+  <i id="video-ended-icon-${key}" class="bi bi-arrow-clockwise" style="font-size:2rem;"></i>
+</div>`;
 });
 var videoPlayers = Array.from(document.querySelectorAll(".video-player"));
 var videofooters = document.querySelectorAll(".video-footer-div");
@@ -97,16 +100,22 @@ videoPlayers.map((item, key) => {
   const videoHeaders = document.getElementById(`video-header-${key}`);
   const share = document.getElementById(`shareBtn-${key}`);
   const popup = document.getElementById(`popup-${key}`);
-  const close = document.getElementById(`close-${key}`);
+  const close = document.querySelectorAll(`.close`);
+  const restartDiv = document.getElementById(`video-ended-${key}`);
+  const restartButton = document.getElementById(`video-ended-icon-${key}`);
   const facebookBtn = document.getElementById(`facebook-${key}`);
   const whatsappBtn = document.getElementById(`whatsapp-${key}`);
   const clipboardBtn = document.getElementById(`clip-${key}`);
   share.addEventListener("click", () => {
     popup.classList.toggle("show");
   });
-  close.addEventListener("click", () => {
-    share.click();
-  });
+  for (let i = 0; i < close.length; i++) {
+    close[i].addEventListener("click", () => {
+      popup.setAttribute("class", `popup`);
+    });
+  }
+
+  // social buttons
   facebookBtn.addEventListener("click", () => {
     facebookBtn.setAttribute(
       "href",
@@ -144,6 +153,7 @@ videoPlayers.map((item, key) => {
       clipboardBtn.childNodes[0].setAttribute("class", `bi bi-clipboard`);
     }, 3000);
   });
+
   soundControl.addEventListener("click", function () {
     if (item.muted) {
       item.muted = false;
@@ -152,6 +162,13 @@ videoPlayers.map((item, key) => {
       item.muted = true;
       soundControl.setAttribute("class", `video-icon bi bi-volume-mute-fill`);
     }
+  });
+
+  restartButton.addEventListener("click", () => {
+    item.play();
+    restartDiv.style.display = "none";
+    videoCards.setAttribute("class", `video-cards video-cards-show`);
+    videoHeaders.setAttribute("class", `video-header video-header-hide`);
   });
 
   item.addEventListener("mouseout", function () {
@@ -196,6 +213,9 @@ videoPlayers.map((item, key) => {
       progress.style.width = `${(v.currentTime / v.duration) * 100}%`;
     }
     console.log((v.currentTime / v.duration) * 100);
+  });
+  item.addEventListener("ended", function () {
+    restartDiv.style.display = "flex";
   });
 });
 
