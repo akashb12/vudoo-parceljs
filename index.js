@@ -79,13 +79,13 @@ data.forEach(function (row, key) {
   </div>
     <div class="video-footer">
     <div class="video-footer-div">
-    <i style="font-size:1.5rem;" id="shareBtn-${key}" class="video-icon bi bi-share-fill"></i>
+    <i style="font-size:1.2rem;" id="shareBtn-${key}" class="video-icon bi bi-share-fill"></i>
     <i style="font-size:1.5rem;" id=unMute-${key} class="video-icon bi bi-volume-mute-fill"></i>
     </div>
     <div>
-      <Link to={"/"}>
+      <a href="/">
         <button class="video-footer-button">${row.cta}</button>
-      </Link>
+      </a>
     </div>
   </div>
   <div id="video-ended-${key}" class="video-ended">
@@ -193,6 +193,10 @@ videoPlayers.map((item, key) => {
     });
   }
   if (window.innerWidth <= 600) {
+    if (item.paused) {
+      videoCards.setAttribute("class", `video-cards video-cards-hide`);
+      videoHeaders.setAttribute("class", `video-header video-header-show`);
+    }
     item.addEventListener("click", function () {
       if (this.paused) {
         this.play();
