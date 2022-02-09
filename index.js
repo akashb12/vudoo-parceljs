@@ -92,6 +92,7 @@ data.forEach(function (row, key) {
   <i id="video-ended-icon-${key}" class="bi bi-arrow-clockwise" style="font-size:2rem;"></i>
 </div>`;
 });
+const url = "http://localhost:5000/analytics";
 var videoPlayers = Array.from(document.querySelectorAll(".video-player"));
 var videofooters = document.querySelectorAll(".video-footer-div");
 videoPlayers.map((item, key) => {
@@ -209,6 +210,7 @@ videoPlayers.map((item, key) => {
       }
     });
   }
+  var timeUpdate = 0;
   item.addEventListener("timeupdate", function () {
     var v = document.getElementById(`video-${key}`);
     var progress = document.getElementById(`progress-bar-${key}`);
@@ -216,11 +218,45 @@ videoPlayers.map((item, key) => {
     if ((v.currentTime / v.duration) * 100 > 10) {
       progress.style.width = `${(v.currentTime / v.duration) * 100}%`;
     }
-    console.log((v.currentTime / v.duration) * 100);
+
+    if (parseInt(v.currentTime) == 4) {
+      timeUpdate += 1;
+      if (timeUpdate === 1) {
+        if (!navigator.sendBeacon) return;
+        const dataHistoryBlob = JSON.stringify({
+          videoStarted: false,
+          videoEnded: false,
+          fourSeconds: true,
+        });
+        navigator.sendBeacon(url, dataHistoryBlob);
+      }
+    }
   });
+  var a = 0;
   item.addEventListener("ended", function () {
     restartDiv.style.display = "flex";
+    a = 0;
+    if (!navigator.sendBeacon) return;
+    const dataHistoryBlob = JSON.stringify({
+      videoStarted: false,
+      videoEnded: true,
+      fourSeconds: true,
+    });
+
+    navigator.sendBeacon(url, dataHistoryBlob);
+  });
+
+  item.addEventListener("playing", function () {
+    a += 1;
+    if (a == 1) {
+      if (!navigator.sendBeacon) return;
+      const dataHistoryBlob = JSON.stringify({
+        videoStarted: true,
+        videoEnded: false,
+        fourSeconds: false,
+      });
+
+      navigator.sendBeacon(url, dataHistoryBlob);
+    }
   });
 });
-
-// }
