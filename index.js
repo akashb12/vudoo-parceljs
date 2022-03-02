@@ -50,11 +50,17 @@ data.forEach(function (row, key) {
  <div class="content">
    <ul class="icons">
      <a id="facebook-${key}" href="#"><i class="bi bi-facebook"></i></a>
-     <a href="#"><i class="bi bi-twitter"></i></a>
-     <a href="#"><i class="bi bi-instagram"></i></a>
+     <a id="twitter-${key}" href="#"><i class="bi bi-twitter"></i></a>
+     <a id="telegram-${key}" href="#"><i class="bi bi-telegram"></i></i></a>
      <a id="whatsapp-${key}" href="#"><i class="bi bi-whatsapp"></i></a>
-     <a id="clip-${key}" href="#"><i class="bi bi-clipboard"></i></a>
+     <a  href="#"><i class="bi bi-clipboard"></i></a>
    </ul>
+   <p>Or copy link</p>
+      <div class="field">
+      
+        <input type="text" readonly value=${row.url}>
+        <button id="clip-${key}">Copy</button>
+      </div>
    </div>
 </div>
   <div class="video-container outer-max-width">
@@ -104,6 +110,8 @@ videoPlayers.map((item, key) => {
   const restartDiv = document.getElementById(`video-ended-${key}`);
   const restartButton = document.getElementById(`video-ended-icon-${key}`);
   const facebookBtn = document.getElementById(`facebook-${key}`);
+  const twitterBtn = document.getElementById(`twitter-${key}`);
+  const telegramBtn = document.getElementById(`telegram-${key}`);
   const whatsappBtn = document.getElementById(`whatsapp-${key}`);
   const clipboardBtn = document.getElementById(`clip-${key}`);
   share.addEventListener("click", () => {
@@ -122,12 +130,28 @@ videoPlayers.map((item, key) => {
       `https://www.facebook.com/sharer.php?u=${item.src}`
     );
   });
+
+  twitterBtn.addEventListener("click", () => {
+    twitterBtn.setAttribute(
+      "href",
+      `https://twitter.com/share?url="+encodeURIComponent(${item.src})`
+    );
+  });
+
   whatsappBtn.addEventListener("click", () => {
     whatsappBtn.setAttribute(
       "href",
       `https://wa.me/?text=${"Share This Video Link"} ${item.src}`
     );
   });
+
+  telegramBtn.addEventListener("click", () => {
+    telegramBtn.setAttribute(
+      "href",
+      ` https://telegram.me/share/url?url=${item.src}&text="Share This Video Link"`
+    );
+  });
+
   clipboardBtn.addEventListener("click", () => {
     var dummy = document.createElement("input");
 
