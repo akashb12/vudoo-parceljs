@@ -236,6 +236,7 @@ button {
     transform 0.2s 0s ease-in-out;
 }
 .popup.hide {
+  display: none;
   top: 50%;
   opacity: 0;
   pointer-events: auto;
@@ -366,7 +367,15 @@ header .close:hover {
   color: #fff;
   padding: 5px 18px;
   background: #7d2ae8;
+  margin: 10px;
 }
 .field button:hover {
   background: #8d39fa;
+}
+
+@media screen and (max-width: 600px) {
+  .popup {
+    padding: 10px;
+    max-width: 350px;
+  }
 }

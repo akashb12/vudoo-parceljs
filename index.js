@@ -36,6 +36,19 @@ const data = [
     cta: "Buy Now",
   },
 ];
+// fetch(
+//   "https://dev.vudoo.zymmo.com/play/v1/12e2d10a-5047-47b2-b348-5d1576f21947",
+//   {
+//     method: "GET",
+//     headers: {
+//       Authorization:
+//         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJhY2NvdW50SWQiOjEwLCJpYXQiOjE2NDYxMTM5ODIsImV4cCI6MTY0ODcwNTk4Mn0.2iWMxEzevw0a0B-dnUMTMSO6Zq_MZ1M7qVOCjjkg5Ok",
+//     },
+//   }
+// )
+//   .then((response) => response.json())
+//   .then((json) => console.log(json));
+// .catch(err => console.log(err));
 const d = document.getElementById("video-page");
 data.forEach(function (row, key) {
   // var newRow = document.createElement("tr");
@@ -53,7 +66,7 @@ data.forEach(function (row, key) {
      <a id="twitter-${key}" href="#"><i class="bi bi-twitter"></i></a>
      <a id="telegram-${key}" href="#"><i class="bi bi-telegram"></i></i></a>
      <a id="whatsapp-${key}" href="#"><i class="bi bi-whatsapp"></i></a>
-     <a  href="#"><i class="bi bi-clipboard"></i></a>
+     <a id="mail-${key}" href="#"><i class="bi bi-envelope"></i></a>
    </ul>
    <p>Or copy link</p>
       <div class="field">
@@ -107,21 +120,36 @@ videoPlayers.map((item, key) => {
   const share = document.getElementById(`shareBtn-${key}`);
   const popup = document.getElementById(`popup-${key}`);
   const close = document.querySelectorAll(`.close`);
+  const shareTest = document.querySelectorAll(`.video-icon`);
   const restartDiv = document.getElementById(`video-ended-${key}`);
   const restartButton = document.getElementById(`video-ended-icon-${key}`);
   const facebookBtn = document.getElementById(`facebook-${key}`);
   const twitterBtn = document.getElementById(`twitter-${key}`);
   const telegramBtn = document.getElementById(`telegram-${key}`);
   const whatsappBtn = document.getElementById(`whatsapp-${key}`);
+  const mailBtn = document.getElementById(`mail-${key}`);
   const clipboardBtn = document.getElementById(`clip-${key}`);
   share.addEventListener("click", () => {
+    popup.setAttribute("class", `popup`);
     popup.classList.toggle("show");
   });
   for (let i = 0; i < close.length; i++) {
     close[i].addEventListener("click", () => {
       popup.setAttribute("class", `popup`);
+      popup.classList.toggle("hide");
     });
   }
+
+  for (let i = 0; i < shareTest.length; i++) {
+    shareTest[i].addEventListener("click", () => {
+      popup.setAttribute("class", `popup`);
+      popup.classList.toggle("hide");
+    });
+  }
+  share.addEventListener("click", () => {
+    popup.setAttribute("class", `popup`);
+    popup.classList.toggle("show");
+  });
 
   // social buttons
   facebookBtn.addEventListener("click", () => {
@@ -152,6 +180,13 @@ videoPlayers.map((item, key) => {
     );
   });
 
+  mailBtn.addEventListener("click", () => {
+    mailBtn.setAttribute(
+      "href",
+      `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su=Share Video Link&body=${item.src}&ui=2&tf=1&pli=1`
+    );
+  });
+
   clipboardBtn.addEventListener("click", () => {
     var dummy = document.createElement("input");
 
@@ -172,9 +207,13 @@ videoPlayers.map((item, key) => {
 
     // Remove it as its not needed anymore
     document.body.removeChild(dummy);
-    clipboardBtn.childNodes[0].setAttribute("class", `bi bi-check`);
+    // clipboardBtn.childNodes[0].setAttribute("class", `bi bi-check`);
+    clipboardBtn.value = "Copied";
+    clipboardBtn.innerHTML = "Copied";
     setTimeout(() => {
-      clipboardBtn.childNodes[0].setAttribute("class", `bi bi-clipboard`);
+      // clipboardBtn.childNodes[0].setAttribute("class", `bi bi-clipboard`);
+      clipboardBtn.value = "Copy";
+      clipboardBtn.innerHTML = "Copy";
     }, 3000);
   });
 
