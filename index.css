@@ -120,6 +120,16 @@ video {
   bottom: 0;
   width: 100%;
 }
+.video-started {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  bottom: 50%;
+  /* width: 100%; */
+}
 .video-footer {
   display: flex;
   justify-content: space-around;
