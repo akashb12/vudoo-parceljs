@@ -95,6 +95,11 @@ html {
 video {
   height: 100%;
   scroll-snap-align: start;
+  width: 305px;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
   /* position: relative; */
 }
 .video-cards-hide {
@@ -387,5 +392,11 @@ header .close:hover {
   .popup {
     padding: 10px;
     max-width: 350px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .popup {
+    padding: 10px;
+    max-width: 300px;
   }
 }
