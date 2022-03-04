@@ -114,12 +114,16 @@ fetch(
       <i id="video-ended-icon-${key}" class="bi bi-arrow-clockwise" style="font-size:2rem;"></i>
     </div>`;
     });
-    var checkVideoPaused = false;
-    var checkVideoPausedMobile = true;
-    var checkVideoEnded = false;
+    // var checkVideoPaused = false;
+    var checkVideoPaused = [];
+    var checkVideoPausedMobile = [];
+    var checkVideoEnded = [];
     var videoPlayers = Array.from(document.querySelectorAll(".video-player"));
     var videofooters = document.querySelectorAll(".video-footer-div");
     videoPlayers.map((item, key) => {
+      checkVideoPaused[key] = false;
+      checkVideoPausedMobile[key] = false;
+      checkVideoEnded[key] = false;
       const soundControl = document.getElementById(`unMute-${key}`);
       const videoCards = document.getElementById(`video-cards-${key}`);
       const videoHeaders = document.getElementById(`video-header-${key}`);
@@ -244,7 +248,11 @@ fetch(
             `video-icon bi bi-volume-mute-fill`
           );
         }
-        if (item.paused && !checkVideoPausedMobile) {
+        if (
+          item.paused &&
+          checkVideoPausedMobile[key] == false &&
+          checkVideoEnded[key] == false
+        ) {
           item.play();
           playDiv.style.display = "none";
           videoCards.setAttribute("class", `video-cards video-cards-show`);
@@ -256,7 +264,7 @@ fetch(
       restartButton.addEventListener("click", () => {
         item.play();
         restartDiv.style.display = "none";
-        checkVideoEnded = false;
+        checkVideoEnded[key] = false;
         videoCards.setAttribute("class", `video-cards video-cards-show`);
         videoHeaders.setAttribute("class", `video-header video-header-hide`);
       });
@@ -264,11 +272,11 @@ fetch(
       // pause video on mouse out
       item.addEventListener("mouseout", function () {
         this.pause();
-        if (!checkVideoEnded) {
+        if (checkVideoEnded[key] == false) {
           playDiv.style.display = "flex";
+          videoCards.setAttribute("class", `video-cards video-cards-hide`);
+          videoHeaders.setAttribute("class", `video-header video-header-show`);
         }
-        videoCards.setAttribute("class", `video-cards video-cards-hide`);
-        videoHeaders.setAttribute("class", `video-header video-header-show`);
       });
 
       // web view
@@ -276,12 +284,13 @@ fetch(
         playButton.addEventListener("click", () => {
           item.play();
           playDiv.style.display = "none";
+          checkVideoPaused[key] = false;
           videoCards.setAttribute("class", `video-cards video-cards-show`);
           videoHeaders.setAttribute("class", `video-header video-header-hide`);
         });
         // footer hover effect added
         footerDiv.addEventListener("mouseover", function () {
-          if (!checkVideoPaused) {
+          if (checkVideoPaused[key] == false && checkVideoEnded[key] == false) {
             item.play();
             playDiv.style.display = "none";
             videoCards.setAttribute("class", `video-cards video-cards-show`);
@@ -292,38 +301,31 @@ fetch(
           }
         });
         footerDiv.addEventListener("mouseout", function () {
-          item.pause();
-          playDiv.style.display = "flex";
-          videoCards.setAttribute("class", `video-cards video-cards-hide`);
-          videoHeaders.setAttribute("class", `video-header video-header-show`);
+          if (
+            !checkVideoPaused[key] == false &&
+            checkVideoEnded[key] == false
+          ) {
+            item.pause();
+            playDiv.style.display = "flex";
+            videoCards.setAttribute("class", `video-cards video-cards-hide`);
+            videoHeaders.setAttribute(
+              "class",
+              `video-header video-header-show`
+            );
+          }
         });
-
-        // play button added
-        // playDiv.addEventListener("mouseover", function () {
-        //   item.play();
-        //   playDiv.style.display = "none";
-        //   videoCards.setAttribute("class", `video-cards video-cards-show`);
-        //   videoHeaders.setAttribute("class", `video-header video-header-hide`);
-        // });
-        // playDiv.addEventListener("mouseout", function () {
-        //   item.pause();
-        //   playDiv.style.display = "flex";
-        //   videoCards.setAttribute("class", `video-cards video-cards-hide`);
-        //   videoHeaders.setAttribute("class", `video-header video-header-show`);
-        // });
-
-        // playDiv.addEventListener("mouseout", function () {
-        //   item.pause();
-        //   videoCards.setAttribute("class", `video-cards video-cards-hide`);
-        //   videoHeaders.setAttribute("class", `video-header video-header-show`);
-        // });
         // https://zymmo-image-storage-dev.s3.amazonaws.com/67f7d684008c18950ebb4ea1f2db230d.jpg
         item.addEventListener("mouseover", function () {
-          this.play();
-          playDiv.style.display = "none";
-          checkVideoPaused = false;
-          videoCards.setAttribute("class", `video-cards video-cards-show`);
-          videoHeaders.setAttribute("class", `video-header video-header-hide`);
+          if (checkVideoPaused[key] == false && checkVideoEnded[key] == false) {
+            this.play();
+            playDiv.style.display = "none";
+            checkVideoPaused[key] = false;
+            videoCards.setAttribute("class", `video-cards video-cards-show`);
+            videoHeaders.setAttribute(
+              "class",
+              `video-header video-header-hide`
+            );
+          }
         });
         if (item.paused) {
           videoCards.setAttribute("class", `video-cards video-cards-hide`);
@@ -332,7 +334,7 @@ fetch(
         item.addEventListener("click", function () {
           this.pause();
           playDiv.style.display = "flex";
-          checkVideoPaused = true;
+          checkVideoPaused[key] = true;
           videoCards.setAttribute("class", `video-cards video-cards-hide`);
           videoHeaders.setAttribute("class", `video-header video-header-show`);
         });
@@ -346,24 +348,24 @@ fetch(
         }
         playButton.addEventListener("click", () => {
           item.play();
-          checkVideoPausedMobile = false;
+          checkVideoPausedMobile[key] = false;
           playDiv.style.display = "none";
           videoCards.setAttribute("class", `video-cards video-cards-show`);
           videoHeaders.setAttribute("class", `video-header video-header-hide`);
         });
         item.addEventListener("click", function () {
-          if (this.paused) {
+          if (this.paused && checkVideoEnded[key] == false) {
             this.play();
-            checkVideoPausedMobile = false;
+            checkVideoPausedMobile[key] = false;
             playDiv.style.display = "none";
             videoCards.setAttribute("class", `video-cards video-cards-show`);
             videoHeaders.setAttribute(
               "class",
               `video-header video-header-hide`
             );
-          } else {
+          } else if (checkVideoEnded[key] == false) {
             this.pause();
-            checkVideoPausedMobile = true;
+            checkVideoPausedMobile[key] = true;
             playDiv.style.display = "flex";
             videoCards.setAttribute("class", `video-cards video-cards-hide`);
             videoHeaders.setAttribute(
@@ -390,7 +392,7 @@ fetch(
         restartDiv.style.display = "flex";
         videoCards.setAttribute("class", `video-cards video-cards-hide`);
         videoHeaders.setAttribute("class", `video-header video-header-show`);
-        checkVideoEnded = true;
+        checkVideoEnded[key] = true;
         playDiv.style.display = "none";
       });
     });
