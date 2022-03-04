@@ -137,16 +137,22 @@ videoPlayers.map((item, key) => {
   const mailBtn = document.getElementById(`mail-${key}`);
   const clipboardBtn = document.getElementById(`clip-${key}`);
   const footerDiv = document.getElementById(`video-footer-${key}`);
+
+  // share modal functionality
   share.addEventListener("click", () => {
     popup.setAttribute("class", `popup`);
     popup.classList.toggle("show");
   });
+
+  // close modal
   for (let i = 0; i < close.length; i++) {
     close[i].addEventListener("click", () => {
       popup.setAttribute("class", `popup`);
       popup.classList.toggle("hide");
     });
   }
+
+  // open modal
 
   for (let i = 0; i < shareTest.length; i++) {
     shareTest[i].addEventListener("click", () => {
