@@ -110,6 +110,9 @@ fetch(
       <div id="video-started-${key}" class="video-started">
       <i id="video-started-icon-${key}" class="bi bi-play" style="font-size:2rem;"></i>
     </div>
+    <div id="video-paused-${key}" class="video-paused">
+    <i id="video-paused-icon-${key}" class="bi bi-pause" style="font-size:2rem;"></i>
+  </div>
       <div id="video-ended-${key}" class="video-ended">
       <i id="video-ended-icon-${key}" class="bi bi-arrow-clockwise" style="font-size:2rem;"></i>
     </div>`;
@@ -135,6 +138,8 @@ fetch(
       const restartButton = document.getElementById(`video-ended-icon-${key}`);
       const playDiv = document.getElementById(`video-started-${key}`);
       const playButton = document.getElementById(`video-started-icon-${key}`);
+      const pauseDiv = document.getElementById(`video-paused-${key}`);
+      const pauseButton = document.getElementById(`video-paused-icon-${key}`);
       const facebookBtn = document.getElementById(`facebook-${key}`);
       const twitterBtn = document.getElementById(`twitter-${key}`);
       const telegramBtn = document.getElementById(`telegram-${key}`);
@@ -251,6 +256,7 @@ fetch(
         if (
           item.paused &&
           checkVideoPausedMobile[key] == false &&
+          checkVideoPaused[key] == false &&
           checkVideoEnded[key] == false
         ) {
           item.play();
@@ -271,9 +277,10 @@ fetch(
 
       // pause video on mouse out
       item.addEventListener("mouseout", function () {
-        this.pause();
         if (checkVideoEnded[key] == false) {
+          this.pause();
           playDiv.style.display = "flex";
+          pauseDiv.style.display = "none";
           videoCards.setAttribute("class", `video-cards video-cards-hide`);
           videoHeaders.setAttribute("class", `video-header video-header-show`);
         }
@@ -284,15 +291,33 @@ fetch(
         playButton.addEventListener("click", () => {
           item.play();
           playDiv.style.display = "none";
+          pauseDiv.style.display = "flex";
           checkVideoPaused[key] = false;
           videoCards.setAttribute("class", `video-cards video-cards-show`);
           videoHeaders.setAttribute("class", `video-header video-header-hide`);
+        });
+        pauseButton.addEventListener("mouseover", () => {
+          item.play();
+          playDiv.style.display = "none";
+          pauseDiv.style.display = "flex";
+          checkVideoPaused[key] = false;
+          videoCards.setAttribute("class", `video-cards video-cards-show`);
+          videoHeaders.setAttribute("class", `video-header video-header-hide`);
+        });
+        pauseButton.addEventListener("click", () => {
+          item.pause();
+          playDiv.style.display = "flex";
+          pauseDiv.style.display = "none";
+          checkVideoPaused[key] = true;
+          videoCards.setAttribute("class", `video-cards video-cards-hide`);
+          videoHeaders.setAttribute("class", `video-header video-header-show`);
         });
         // footer hover effect added
         footerDiv.addEventListener("mouseover", function () {
           if (checkVideoPaused[key] == false && checkVideoEnded[key] == false) {
             item.play();
             playDiv.style.display = "none";
+            pauseDiv.style.display = "flex";
             videoCards.setAttribute("class", `video-cards video-cards-show`);
             videoHeaders.setAttribute(
               "class",
@@ -301,12 +326,10 @@ fetch(
           }
         });
         footerDiv.addEventListener("mouseout", function () {
-          if (
-            !checkVideoPaused[key] == false &&
-            checkVideoEnded[key] == false
-          ) {
+          if (checkVideoPaused[key] == false && checkVideoEnded[key] == false) {
             item.pause();
             playDiv.style.display = "flex";
+            pauseDiv.style.display = "none";
             videoCards.setAttribute("class", `video-cards video-cards-hide`);
             videoHeaders.setAttribute(
               "class",
@@ -319,6 +342,7 @@ fetch(
           if (checkVideoPaused[key] == false && checkVideoEnded[key] == false) {
             this.play();
             playDiv.style.display = "none";
+            pauseDiv.style.display = "flex";
             checkVideoPaused[key] = false;
             videoCards.setAttribute("class", `video-cards video-cards-show`);
             videoHeaders.setAttribute(
@@ -331,13 +355,19 @@ fetch(
           videoCards.setAttribute("class", `video-cards video-cards-hide`);
           videoHeaders.setAttribute("class", `video-header video-header-show`);
         }
-        item.addEventListener("click", function () {
-          this.pause();
-          playDiv.style.display = "flex";
-          checkVideoPaused[key] = true;
-          videoCards.setAttribute("class", `video-cards video-cards-hide`);
-          videoHeaders.setAttribute("class", `video-header video-header-show`);
-        });
+        // item.addEventListener("click", function () {
+        //   if (checkVideoEnded[key] == false) {
+        //     this.pause();
+        //     playDiv.style.display = "flex";
+        //     pauseDiv.style.display = "none";
+        //     checkVideoPaused[key] = true;
+        //     videoCards.setAttribute("class", `video-cards video-cards-hide`);
+        //     videoHeaders.setAttribute(
+        //       "class",
+        //       `video-header video-header-show`
+        //     );
+        //   }
+        // });
       }
 
       // mobile view
@@ -350,14 +380,25 @@ fetch(
           item.play();
           checkVideoPausedMobile[key] = false;
           playDiv.style.display = "none";
+          pauseDiv.style.display = "flex";
           videoCards.setAttribute("class", `video-cards video-cards-show`);
           videoHeaders.setAttribute("class", `video-header video-header-hide`);
+        });
+
+        pauseButton.addEventListener("click", () => {
+          item.pause();
+          playDiv.style.display = "flex";
+          pauseDiv.style.display = "none";
+          checkVideoPausedMobile[key] = true;
+          videoCards.setAttribute("class", `video-cards video-cards-hide`);
+          videoHeaders.setAttribute("class", `video-header video-header-show`);
         });
         item.addEventListener("click", function () {
           if (this.paused && checkVideoEnded[key] == false) {
             this.play();
             checkVideoPausedMobile[key] = false;
             playDiv.style.display = "none";
+            pauseDiv.style.display = "flex";
             videoCards.setAttribute("class", `video-cards video-cards-show`);
             videoHeaders.setAttribute(
               "class",
@@ -367,6 +408,7 @@ fetch(
             this.pause();
             checkVideoPausedMobile[key] = true;
             playDiv.style.display = "flex";
+            pauseDiv.style.display = "none";
             videoCards.setAttribute("class", `video-cards video-cards-hide`);
             videoHeaders.setAttribute(
               "class",
@@ -394,6 +436,7 @@ fetch(
         videoHeaders.setAttribute("class", `video-header video-header-show`);
         checkVideoEnded[key] = true;
         playDiv.style.display = "none";
+        pauseDiv.style.display = "none";
       });
     });
   });

@@ -134,6 +134,16 @@ video {
   bottom: 50%;
   /* width: 100%; */
 }
+.video-paused {
+  display: none;
+  justify-content: space-around;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  bottom: 50%;
+  /* width: 100%; */
+}
 .video-footer {
   display: flex;
   justify-content: space-around;
@@ -395,7 +405,16 @@ header .close:hover {
 }
 @media screen and (max-width: 400px) {
   .popup {
-    padding: 10px;
-    max-width: 300px;
+    padding: 15px;
+    max-width: 280px;
+  }
+}
+@media screen and (max-width: 350px) {
+  .popup {
+    padding: 15px;
+    max-width: 260px;
+  }
+  .content .icons a {
+    margin: 2px;
   }
 }
