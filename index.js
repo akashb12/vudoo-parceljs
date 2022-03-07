@@ -1,50 +1,5 @@
-const data = [
-  {
-    id: 1,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/cecd87f9408edfbf72e5f1ab83a32af0.mp4",
-    title: "Putting Sugar On Top Of Cupcakes",
-    cta: "Shop Now",
-  },
-  {
-    id: 2,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/c8101111447f5e9f3e93ef3076a87c72.mp4",
-    title: "Top View of A Person Slicing Cherry Tomatoes Using a Knife",
-    cta: "Order Now",
-  },
-  {
-    id: 3,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/e51f1e99e9777bb13f4e8a8664ff7998.mp4",
-    title: "Pouring Honey on the Sliced Bananas",
-    cta: "Buy Now",
-  },
-  {
-    id: 4,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/df687a19bfa352a0250a2dcc3fa9760c.mp4",
-    title: "Cooking Dumplings",
-    cta: "Order Now",
-  },
-  {
-    id: 5,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/a68130e6b5ac0ee74ff7790fe6b77c02.mp4",
-    title: "A Person Stirring a Broccoli Soup Using a Spoon",
-    cta: "Shop Now",
-  },
-  {
-    id: 6,
-    url: "https://zymmo-image-storage-staging.s3.amazonaws.com/10cf33744b87483b769478f51730d46d.mp4",
-    title: "Person Cutting A Onion",
-    cta: "Buy Now",
-  },
-];
 fetch(
-  "https://dev.vudoo.zymmo.com/play/v1/12e2d10a-5047-47b2-b348-5d1576f21947",
-  {
-    method: "GET",
-    headers: {
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJhY2NvdW50SWQiOjEwLCJpYXQiOjE2NDYxMTM5ODIsImV4cCI6MTY0ODcwNTk4Mn0.2iWMxEzevw0a0B-dnUMTMSO6Zq_MZ1M7qVOCjjkg5Ok",
-    },
-  }
+  "https://dev.vudoo.zymmo.com/play/v1/12e2d10a-5047-47b2-b348-5d1576f21947"
 )
   .then((response) => response.json())
   .then((json) => {
@@ -123,6 +78,18 @@ fetch(
     var checkVideoEnded = [];
     var videoPlayers = Array.from(document.querySelectorAll(".video-player"));
     var videofooters = document.querySelectorAll(".video-footer-div");
+
+    //video loaded event
+    // if (!navigator.sendBeacon) return;
+    const dataHistoryBlob = JSON.stringify({
+      videoStarted: false,
+      videoEnded: false,
+      fourSeconds: false,
+      videoLoaded: true,
+    });
+    console.log("loaded", dataHistoryBlob);
+
+    // navigator.sendBeacon(url, dataHistoryBlob);
     videoPlayers.map((item, key) => {
       checkVideoPaused[key] = false;
       checkVideoPausedMobile[key] = false;
@@ -419,6 +386,7 @@ fetch(
       }
 
       // progress bar
+      var timeUpdate = 0;
       item.addEventListener("timeupdate", function () {
         var v = document.getElementById(`video-${key}`);
         var progress = document.getElementById(`progress-bar-${key}`);
@@ -426,9 +394,32 @@ fetch(
         if ((v.currentTime / v.duration) * 100 > 10) {
           progress.style.width = `${(v.currentTime / v.duration) * 100}%`;
         }
+        let tempOne = 0;
+        let tempTwo = 0;
+
         // console.log((v.currentTime / v.duration) * 100);
+        if (parseInt(v.currentTime) % 4 != 0) {
+          timeUpdate = 0;
+        }
+        if (parseInt(v.currentTime) % 4 == 0 && parseInt(v.currentTime) !== 0) {
+          timeUpdate += 1;
+          // tempOne = parseInt(v.currentTime);
+          // if(abc != )
+          if (timeUpdate === 1) {
+            // tempTwo=tempOne
+            // if (!navigator.sendBeacon) return;
+            const dataHistoryBlob = JSON.stringify({
+              videoStarted: false,
+              videoEnded: false,
+              fourSeconds: true,
+            });
+            // navigator.sendBeacon(url, dataHistoryBlob);
+            console.log("fourseconds", dataHistoryBlob);
+          }
+        }
       });
 
+      var a = 0;
       // restart button
       item.addEventListener("ended", function () {
         restartDiv.style.display = "flex";
@@ -437,9 +428,32 @@ fetch(
         checkVideoEnded[key] = true;
         playDiv.style.display = "none";
         pauseDiv.style.display = "none";
+        a = 0;
+        // if (!navigator.sendBeacon) return;
+        const dataHistoryBlob = JSON.stringify({
+          videoStarted: false,
+          videoEnded: true,
+          fourSeconds: false,
+        });
+        console.log("ended", dataHistoryBlob);
+
+        // navigator.sendBeacon(url, dataHistoryBlob);
+      });
+
+      // video started
+      item.addEventListener("playing", function () {
+        a += 1;
+        if (a == 1) {
+          // if (!navigator.sendBeacon) return;
+          const dataHistoryBlob = JSON.stringify({
+            videoStarted: true,
+            videoEnded: false,
+            fourSeconds: false,
+          });
+          console.log("started", dataHistoryBlob);
+
+          // navigator.sendBeacon(url, dataHistoryBlob);
+        }
       });
     });
   });
-// .catch(err => console.log(err));
-
-// }
