@@ -412,6 +412,7 @@ fetch(
               videoStarted: false,
               videoEnded: false,
               fourSeconds: true,
+              videoLoaded: false,
             });
             // navigator.sendBeacon(url, dataHistoryBlob);
             console.log("fourseconds", dataHistoryBlob);
@@ -434,6 +435,7 @@ fetch(
           videoStarted: false,
           videoEnded: true,
           fourSeconds: false,
+          videoLoaded: false,
         });
         console.log("ended", dataHistoryBlob);
 
@@ -449,6 +451,7 @@ fetch(
             videoStarted: true,
             videoEnded: false,
             fourSeconds: false,
+            videoLoaded: false,
           });
           console.log("started", dataHistoryBlob);
 
