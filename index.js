@@ -1,13 +1,34 @@
-fetch(
-  "https://dev.vudoo.zymmo.com/play/v1/12e2d10a-5047-47b2-b348-5d1576f21947"
-)
+//  integration type taken from fireworks
+const integrationTypes = ["floating_player", "grid", "carousel", "story_block"];
+const integrationId = "12e2d10a-5047-47b2-b348-5d1576f21947";
+function uuidv4() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+const baseEvent = {
+  visitor: localStorage.getItem("visitorId")
+    ? localStorage.getItem("visitorId")
+    : uuidv4(),
+  session: sessionStorage.getItem("sessionId")
+    ? sessionStorage.getItem("sessionId")
+    : uuidv4(),
+  integrationType: integrationTypes[2],
+  integrationId: integrationId,
+  pageUrl: "",
+  timestamp: "",
+};
+const events = [];
+localStorage.setItem("visitorId", baseEvent.visitor);
+sessionStorage.setItem("sessionId", baseEvent.session);
+
+fetch("https://dev.vudoo.zymmo.com/play/v1/" + integrationId)
   .then((response) => response.json())
   .then((json) => {
     const d = document.getElementById("video-page");
     json.data.videos.forEach(function (row, key) {
-      // var newRow = document.createElement("tr");
-      // tableBody.appendChild(newRow);
-
       d.innerHTML += `
       <div id="popup-${key}" class="popup">
      <header>
@@ -36,7 +57,7 @@ fetch(
         id=video-${key}
         class="video-player"
         poster=${row.poster.urls.original}
-        src=${row.resource.urls.original}
+        src=${row.resource.urls.original}?id=${row.id}
         muted="muted"
         playsInline
       />
@@ -57,9 +78,8 @@ fetch(
         <i style="font-size:1.5rem;" id=unMute-${key} class="video-icon bi bi-volume-mute-fill"></i>
         </div>
         <div>
-          <a href="/">
-            <button class="video-footer-button"><a style="text-decoration:none; color:black;" href=${row.ctaBtnUrl}>${row.ctaBtnTitle}</a></button>
-          </a>
+            <button class="video-footer-button" value="${row.ctaBtnUrl}" onclick="ctaEvent(this.value,${row.id})">${row.ctaBtnTitle}</button>
+          
         </div>
       </div>
       <div id="video-started-${key}" class="video-started">
@@ -81,13 +101,22 @@ fetch(
 
     //video loaded event
     // if (!navigator.sendBeacon) return;
-    const dataHistoryBlob = JSON.stringify({
-      videoStarted: false,
-      videoEnded: false,
-      fourSeconds: false,
-      videoLoaded: true,
-    });
-    console.log("loaded", dataHistoryBlob);
+    const pageLoadEvent = {
+      ...baseEvent,
+      timestamp: new Date().toISOString(),
+      type: "load",
+    };
+    fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pageLoadEvent),
+    })
+      .then((res) => res.json())
+      .then((res) => console.log(res));
+    // events.push(pageLoadEvent);
+    // console.log("loaded", pageLoadEvent);
 
     // navigator.sendBeacon(url, dataHistoryBlob);
     videoPlayers.map((item, key) => {
@@ -388,14 +417,17 @@ fetch(
       // progress bar
       var timeUpdate = 0;
       item.addEventListener("timeupdate", function () {
+        var getVideo = document.getElementById(`video-${key}`);
+        var videoUrl = getVideo.getAttribute("src");
+        const strs = videoUrl.split("?id=");
+        const videoId = parseInt(strs.at(-1));
+        // console.log(as.getAttribute("src"));
         var v = document.getElementById(`video-${key}`);
         var progress = document.getElementById(`progress-bar-${key}`);
         progress.style.width = "10%";
         if ((v.currentTime / v.duration) * 100 > 10) {
           progress.style.width = `${(v.currentTime / v.duration) * 100}%`;
         }
-        let tempOne = 0;
-        let tempTwo = 0;
 
         // console.log((v.currentTime / v.duration) * 100);
         if (parseInt(v.currentTime) % 4 != 0) {
@@ -406,16 +438,18 @@ fetch(
           // tempOne = parseInt(v.currentTime);
           // if(abc != )
           if (timeUpdate === 1) {
-            // tempTwo=tempOne
             // if (!navigator.sendBeacon) return;
-            const dataHistoryBlob = JSON.stringify({
-              videoStarted: false,
-              videoEnded: false,
-              fourSeconds: true,
-              videoLoaded: false,
-            });
+            const progressEvent = {
+              ...baseEvent,
+              timestamp: new Date().toISOString(),
+              type: "progress",
+              videoId: videoId,
+              watch_time: v.currentTime,
+              seek: v.currentTime,
+            };
+            events.push(progressEvent);
             // navigator.sendBeacon(url, dataHistoryBlob);
-            console.log("fourseconds", dataHistoryBlob);
+            console.log("fourseconds", progressEvent);
           }
         }
       });
@@ -431,32 +465,68 @@ fetch(
         pauseDiv.style.display = "none";
         a = 0;
         // if (!navigator.sendBeacon) return;
-        const dataHistoryBlob = JSON.stringify({
-          videoStarted: false,
-          videoEnded: true,
-          fourSeconds: false,
-          videoLoaded: false,
-        });
-        console.log("ended", dataHistoryBlob);
 
-        // navigator.sendBeacon(url, dataHistoryBlob);
+        // navigator.sendBeacon(
+        //   "https://dev.vudoo.zymmo.com/play/v1/events",
+        //   dataHistoryBlob
+        // );
       });
 
       // video started
-      item.addEventListener("playing", function () {
-        a += 1;
-        if (a == 1) {
-          // if (!navigator.sendBeacon) return;
-          const dataHistoryBlob = JSON.stringify({
-            videoStarted: true,
-            videoEnded: false,
-            fourSeconds: false,
-            videoLoaded: false,
-          });
-          console.log("started", dataHistoryBlob);
+      // item.addEventListener("playing", function () {
+      //   a += 1;
+      //   if (a == 1) {
+      //     // if (!navigator.sendBeacon) return;
+      //     const dataHistoryBlob = JSON.stringify({
+      //       videoStarted: true,
+      //       videoEnded: false,
+      //       fourSeconds: false,
+      //       videoLoaded: false,
+      //     });
+      //     console.log("started", dataHistoryBlob);
 
-          // navigator.sendBeacon(url, dataHistoryBlob);
-        }
-      });
+      //     // navigator.sendBeacon(url, dataHistoryBlob);
+      //   }
+      // });
     });
   });
+
+// cta event
+const ctaEvent = (url, id) => {
+  const conversionEvent = {
+    ...baseEvent,
+    timestamp: new Date().toISOString(),
+    type: "conversion",
+    videoId: id,
+  };
+  console.log("ctaEvent", conversionEvent);
+  fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(conversionEvent),
+  })
+    .then((res) => res.json())
+    .then((res) => console.log(res));
+};
+
+setInterval(sendEvents, 10000);
+function sendEvents() {
+  if (events.length) {
+    // if (!navigator.sendBeacon) return;
+    // navigator.sendBeacon(
+    //   "https://dev.vudoo.zymmo.com/play/v1/events",
+    //   JSON.stringify(events)
+    // );
+    fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(events),
+    })
+      .then((res) => res.json())
+      .then((res) => console.log(res));
+  }
+}
