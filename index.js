@@ -100,25 +100,29 @@ fetch("https://dev.vudoo.zymmo.com/play/v1/" + integrationId)
     var videofooters = document.querySelectorAll(".video-footer-div");
 
     //video loaded event
-    // if (!navigator.sendBeacon) return;
+    if (!navigator.sendBeacon) return;
     const pageLoadEvent = {
       ...baseEvent,
       timestamp: new Date().toISOString(),
       type: "load",
     };
-    fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pageLoadEvent),
-    })
-      .then((res) => res.json())
-      .then((res) => console.log(res));
+    const headers = {
+      type: "application/json",
+    };
+    const blob = new Blob([JSON.stringify([pageLoadEvent])], headers);
+    // fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(pageLoadEvent),
+    // })
+    //   .then((res) => res.json())
+    //   .then((res) => console.log(res));
     // events.push(pageLoadEvent);
     // console.log("loaded", pageLoadEvent);
 
-    // navigator.sendBeacon(url, dataHistoryBlob);
+    navigator.sendBeacon("https://dev.vudoo.zymmo.com/play/v1/events", blob);
     videoPlayers.map((item, key) => {
       checkVideoPaused[key] = false;
       checkVideoPausedMobile[key] = false;
