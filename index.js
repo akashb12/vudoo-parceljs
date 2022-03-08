@@ -506,9 +506,11 @@ const ctaEvent = (url, id) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(conversionEvent),
-  })
-    .then((res) => res.json())
-    .then((res) => console.log(res));
+  }).then((res) => (window.location = url));
+  // .then((res) => {
+  //   console.log(res);
+  //   window.location = url;
+  // });
 };
 
 setInterval(sendEvents, 10000);
