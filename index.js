@@ -109,9 +109,7 @@ fetch("https://dev.vudoo.zymmo.com/play/v1/" + integrationId)
     const headers = {
       type: "application/json",
     };
-    // const blob = new Blob([JSON.stringify([pageLoadEvent])], headers);
-    const params = new URLSearchParams();
-    params.set("data", pageLoadEvent);
+    const blob = new Blob([JSON.stringify([pageLoadEvent])], headers);
     // fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
     //   method: "POST",
     //   headers: {
@@ -124,7 +122,7 @@ fetch("https://dev.vudoo.zymmo.com/play/v1/" + integrationId)
     // events.push(pageLoadEvent);
     // console.log("loaded", pageLoadEvent);
 
-    navigator.sendBeacon("https://dev.vudoo.zymmo.com/play/v1/events", params);
+    navigator.sendBeacon("https://dev.vudoo.zymmo.com/play/v1/events", blob);
     videoPlayers.map((item, key) => {
       checkVideoPaused[key] = false;
       checkVideoPausedMobile[key] = false;
