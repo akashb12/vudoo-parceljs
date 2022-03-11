@@ -20,7 +20,7 @@ const baseEvent = {
   pageUrl: "",
   timestamp: "",
 };
-const events = [];
+var events = [];
 localStorage.setItem("visitorId", baseEvent.visitor);
 sessionStorage.setItem("sessionId", baseEvent.session);
 
@@ -100,29 +100,35 @@ fetch("https://dev.vudoo.zymmo.com/play/v1/" + integrationId)
     var videofooters = document.querySelectorAll(".video-footer-div");
 
     //video loaded event
-    if (!navigator.sendBeacon) return;
+    // if (!navigator.sendBeacon) return;
     const pageLoadEvent = {
       ...baseEvent,
       timestamp: new Date().toISOString(),
       type: "load",
     };
-    const headers = {
-      type: "application/json",
-    };
-    const blob = new Blob([JSON.stringify([pageLoadEvent])], headers);
-    // fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(pageLoadEvent),
-    // })
-    //   .then((res) => res.json())
-    //   .then((res) => console.log(res));
-    // events.push(pageLoadEvent);
-    // console.log("loaded", pageLoadEvent);
+    events.push(pageLoadEvent);
+    // const headers = { type: "application/json; charset=UTF-8" };
+    // const blob = new Blob([JSON.stringify(pageLoadEvent)], headers);
+    // navigator.sendBeacon("http://localhost:4000/play/v1/sendEvents", blob);
+    if (!navigator.sendBeacon) {
+      return;
+    }
 
-    navigator.sendBeacon("https://dev.vudoo.zymmo.com/play/v1/events", blob);
+    function visibilitychange() {
+      const blob = new Blob([JSON.stringify(events)], {
+        type: "text/plain; charset=UTF-8",
+      });
+      navigator.sendBeacon(
+        "https://6f5b-2401-4900-1b6f-dd6d-deea-740a-bf56-31e5.ngrok.io/play/v1/sendEvents",
+        blob
+      );
+    }
+
+    // window.addEventListener("beforeunload", onUnload);
+    document.addEventListener("visibilitychange", visibilitychange);
+    // const blob = new Blob([JSON.stringify([pageLoadEvent])], headers);
+
+    // navigator.sendBeacon("http://localhost:4000/events", { type: "course" });
     videoPlayers.map((item, key) => {
       checkVideoPaused[key] = false;
       checkVideoPausedMobile[key] = false;
@@ -504,35 +510,33 @@ const ctaEvent = (url, id) => {
     videoId: id,
   };
   console.log("ctaEvent", conversionEvent);
-  fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(conversionEvent),
-  }).then((res) => (window.location = url));
+  events.push(conversionEvent);
+  window.location = url;
+  // fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(conversionEvent),
+  // }).then((res) => (window.location = url));
   // .then((res) => {
   //   console.log(res);
-  //   window.location = url;
+  // window.location = url;
   // });
 };
 
-setInterval(sendEvents, 10000);
+// setInterval(sendEvents, 10000);
 function sendEvents() {
   if (events.length) {
-    // if (!navigator.sendBeacon) return;
-    // navigator.sendBeacon(
-    //   "https://dev.vudoo.zymmo.com/play/v1/events",
-    //   JSON.stringify(events)
-    // );
-    fetch("https://dev.vudoo.zymmo.com/play/v1/events", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(events),
-    })
-      .then((res) => res.json())
-      .then((res) => console.log(res));
+    if (!navigator.sendBeacon) return;
+    // var data = [{ foo: "bar" }, { foo: "char" }];
+    // var payload = JSON.stringify(events);
+    const blob = new Blob([JSON.stringify(events)], {
+      type: "text/plain; charset=UTF-8",
+    });
+    navigator.sendBeacon(
+      "https://dev.vudoo.zymmo.com/play/v1/sendEvents",
+      blob
+    );
   }
 }
